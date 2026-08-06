@@ -5,3 +5,5 @@ kind: Kustomization
 resources:
   - source.yaml
   - cluster-sync.yaml
+  - security-controller.yaml
+  - security-policies.yaml

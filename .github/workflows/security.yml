@@ -1,0 +1,53 @@
+---
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  kyverno-policy-test:
+    name: Kyverno policy test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install Kyverno CLI
+        run: |
+          version="1.15.2"
+          curl -sSfL \
+            "https://github.com/kyverno/kyverno/releases/download/v${version}/kyverno-cli_v${version}_linux_x86_64.tar.gz" |
+            tar -xz
+
+          sudo install -m 0755 kyverno /usr/local/bin/kyverno
+
+      - name: Validate Kyverno policies
+        run: |
+          kyverno apply security/policies/kyverno \
+            --resource validation/fixtures/security/privileged-pod.yaml \
+            --resource validation/fixtures/security/latest-tag-pod.yaml \
+            --resource validation/fixtures/security/missing-resources-pod.yaml
+
+  trivy-config:
+    name: Trivy configuration scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Scan Kubernetes configuration
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: config
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          hide-progress: true

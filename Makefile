@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig
+.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig
 
 help:
 @echo "Available targets:"
@@ -40,3 +40,5 @@ sudo ./scripts/bootstrap-flux.sh
 
 export-kubeconfig:
 sudo ./scripts/export-kubeconfig.sh
+security-validate:
+./validation/security-baseline.sh

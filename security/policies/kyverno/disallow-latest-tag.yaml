@@ -1,0 +1,34 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/title: Disallow Latest Image Tag
+    policies.kyverno.io/category: Supply Chain Security
+    policies.kyverno.io/severity: medium
+spec:
+  admission: true
+  background: true
+  validationFailureAction: Enforce
+  rules:
+    - name: validate-image-tag
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaceSelector:
+                matchLabels:
+                  security.platform.io/enforce: restricted
+      validate:
+        allowExistingViolations: true
+        message: Images must use an explicit immutable version tag.
+        pattern:
+          spec:
+            containers:
+              - image: "*:*"
+                =(imagePullPolicy): "Always | IfNotPresent"
+            =(initContainers):
+              - image: "*:*"
+                =(imagePullPolicy): "Always | IfNotPresent"

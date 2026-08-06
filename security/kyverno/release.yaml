@@ -1,0 +1,148 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kyverno
+  namespace: kyverno
+spec:
+  interval: 30m
+  timeout: 15m
+
+  chart:
+    spec:
+      chart: kyverno
+      version: 3.8.1
+      sourceRef:
+        kind: HelmRepository
+        name: kyverno
+        namespace: flux-system
+      interval: 1h
+
+  install:
+    createNamespace: false
+    crds: CreateReplace
+    remediation:
+      retries: 3
+
+  upgrade:
+    crds: CreateReplace
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+
+  rollback:
+    cleanupOnFail: true
+    recreate: true
+    timeout: 10m
+
+  values:
+    admissionController:
+      replicas: 3
+
+      container:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 1
+            memory: 1Gi
+
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 2
+
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: admission-controller
+              app.kubernetes.io/instance: kyverno
+
+    backgroundController:
+      replicas: 2
+
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1
+
+    cleanupController:
+      replicas: 2
+
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 300m
+          memory: 256Mi
+
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1
+
+    reportsController:
+      replicas: 2
+
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1
+
+    config:
+      excludeKyvernoNamespace: true
+      generateSuccessEvents: false
+      resourceFilters:
+        - "[Event,*,*]"
+        - "[*,kube-system,*]"
+        - "[*,kube-public,*]"
+        - "[*,kube-node-lease,*]"
+        - "[Node,*,*]"
+        - "[Node/*,*,*]"
+        - "[APIService,*,*]"
+        - "[TokenReview,*,*]"
+        - "[SubjectAccessReview,*,*]"
+        - "[SelfSubjectAccessReview,*,*]"
+        - "[Binding,*,*]"
+        - "[ReplicaSet,*,*]"
+        - "[ReportChangeRequest,*,*]"
+        - "[ClusterReportChangeRequest,*,*]"
+
+    features:
+      admissionReports:
+        enabled: true
+      aggregateReports:
+        enabled: true
+      backgroundScan:
+        enabled: true
+      logging:
+        format: json
+        verbosity: 2
+      policyReports:
+        enabled: true
+      validatingAdmissionPolicyReports:
+        enabled: true
+
+    grafana:
+      enabled: false
+
+    test:
+      enabled: false
