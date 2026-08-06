@@ -10,19 +10,19 @@ fail() {
   exit 1
 }
 
-[[ "${EUID}" -eq 0 ]] ||
-  fail "Run this script as root."
+[[ "${EUID}" -eq 0 ]] \
+  || fail "Run this script as root."
 
-[[ -n "${ROLLBACK_VERSION}" ]] ||
-  fail "ROLLBACK_VERSION is required."
+[[ -n "${ROLLBACK_VERSION}" ]] \
+  || fail "ROLLBACK_VERSION is required."
 
-[[ "${CONFIRM_ROLLBACK}" == "true" ]] ||
-  fail "Set CONFIRM_ROLLBACK=true to continue."
+[[ "${CONFIRM_ROLLBACK}" == "true" ]] \
+  || fail "Set CONFIRM_ROLLBACK=true to continue."
 
-curl -sfL https://get.k3s.io |
-  INSTALL_K3S_VERSION="${ROLLBACK_VERSION}" \
-  INSTALL_K3S_EXEC="server --disable traefik --write-kubeconfig-mode 640" \
-  sh -
+curl -sfL https://get.k3s.io \
+  | INSTALL_K3S_VERSION="${ROLLBACK_VERSION}" \
+    INSTALL_K3S_EXEC="server --disable traefik --write-kubeconfig-mode 640" \
+    sh -
 
 systemctl restart k3s
 systemctl is-active --quiet k3s

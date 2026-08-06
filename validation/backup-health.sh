@@ -15,25 +15,25 @@ latest_snapshot="$(
     -maxdepth 1 \
     -type f \
     ! -name '*.sha256' \
-    -printf '%T@ %p\n' |
-    sort -nr |
-    head -n 1 |
-    cut -d' ' -f2-
+    -printf '%T@ %p\n' \
+    | sort -nr \
+    | head -n 1 \
+    | cut -d' ' -f2-
 )"
 
-[[ -n "${latest_snapshot}" ]] ||
-  fail "No etcd snapshots found."
+[[ -n "${latest_snapshot}" ]] \
+  || fail "No etcd snapshots found."
 
-[[ -f "${latest_snapshot}.sha256" ]] ||
-  fail "Checksum missing for ${latest_snapshot}"
+[[ -f "${latest_snapshot}.sha256" ]] \
+  || fail "Checksum missing for ${latest_snapshot}"
 
 sha256sum --check "${latest_snapshot}.sha256"
 
 snapshot_epoch="$(stat -c %Y "${latest_snapshot}")"
 current_epoch="$(date +%s)"
-age_hours="$(( (current_epoch - snapshot_epoch) / 3600 ))"
+age_hours="$(((current_epoch - snapshot_epoch) / 3600))"
 
-(( age_hours <= MAX_AGE_HOURS )) ||
-  fail "Latest snapshot is ${age_hours} hours old."
+((age_hours <= MAX_AGE_HOURS)) \
+  || fail "Latest snapshot is ${age_hours} hours old."
 
 printf '[INFO] Backup validation passed.\n'

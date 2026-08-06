@@ -35,11 +35,11 @@ main() {
 
   log "Joining worker to ${K3S_URL}"
 
-  curl -sfL https://get.k3s.io | \
-    INSTALL_K3S_VERSION="${K3S_VERSION}" \
-    K3S_URL="${K3S_URL}" \
-    K3S_TOKEN="${K3S_TOKEN}" \
-    sh -
+  curl -sfL https://get.k3s.io \
+    | INSTALL_K3S_VERSION="${K3S_VERSION}" \
+      K3S_URL="${K3S_URL}" \
+      K3S_TOKEN="${K3S_TOKEN}" \
+      sh -
 
   systemctl is-active --quiet k3s-agent || fail "k3s agent failed to start."
 

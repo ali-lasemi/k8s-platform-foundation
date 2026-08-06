@@ -9,14 +9,14 @@ fail() {
   exit 1
 }
 
-command -v kubectl >/dev/null 2>&1 ||
-  fail "kubectl is required."
+command -v kubectl >/dev/null 2>&1 \
+  || fail "kubectl is required."
 
-[[ -n "${NODE_NAME}" ]] ||
-  fail "Usage: $0 NODE_NAME"
+[[ -n "${NODE_NAME}" ]] \
+  || fail "Usage: $0 NODE_NAME"
 
-kubectl get node "${NODE_NAME}" >/dev/null 2>&1 ||
-  fail "Node not found: ${NODE_NAME}"
+kubectl get node "${NODE_NAME}" >/dev/null 2>&1 \
+  || fail "Node not found: ${NODE_NAME}"
 
 kubectl uncordon "${NODE_NAME}"
 

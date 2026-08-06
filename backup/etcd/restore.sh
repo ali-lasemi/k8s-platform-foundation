@@ -21,14 +21,14 @@ require_root() {
 main() {
   require_root
 
-  [[ -n "${SNAPSHOT_PATH}" ]] ||
-    fail "Usage: $0 /path/to/snapshot"
+  [[ -n "${SNAPSHOT_PATH}" ]] \
+    || fail "Usage: $0 /path/to/snapshot"
 
-  [[ -f "${SNAPSHOT_PATH}" ]] ||
-    fail "Snapshot not found: ${SNAPSHOT_PATH}"
+  [[ -f "${SNAPSHOT_PATH}" ]] \
+    || fail "Snapshot not found: ${SNAPSHOT_PATH}"
 
-  [[ "${CONFIRM_RESTORE}" == "true" ]] ||
-    fail "Set CONFIRM_RESTORE=true to continue."
+  [[ "${CONFIRM_RESTORE}" == "true" ]] \
+    || fail "Set CONFIRM_RESTORE=true to continue."
 
   if [[ -f "${SNAPSHOT_PATH}.sha256" ]]; then
     sha256sum --check "${SNAPSHOT_PATH}.sha256"
@@ -46,8 +46,8 @@ main() {
   log "Starting k3s"
   systemctl start k3s
 
-  systemctl is-active --quiet k3s ||
-    fail "k3s failed to start after restore."
+  systemctl is-active --quiet k3s \
+    || fail "k3s failed to start after restore."
 
   log "Restore completed successfully."
 }

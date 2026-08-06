@@ -20,8 +20,8 @@ require_root() {
 }
 
 require_command() {
-  command -v "$1" >/dev/null 2>&1 ||
-    fail "Required command not found: $1"
+  command -v "$1" >/dev/null 2>&1 \
+    || fail "Required command not found: $1"
 }
 
 main() {
@@ -41,16 +41,16 @@ main() {
       -maxdepth 1 \
       -type f \
       -name "${SNAPSHOT_NAME}-*" \
-      -printf '%T@ %p\n' |
-      sort -nr |
-      head -n 1 |
-      cut -d' ' -f2-
+      -printf '%T@ %p\n' \
+      | sort -nr \
+      | head -n 1 \
+      | cut -d' ' -f2-
   )"
 
-  [[ -n "${latest_snapshot}" ]] ||
-    fail "Snapshot file was not found after creation."
+  [[ -n "${latest_snapshot}" ]] \
+    || fail "Snapshot file was not found after creation."
 
-  sha256sum "${latest_snapshot}" > "${latest_snapshot}.sha256"
+  sha256sum "${latest_snapshot}" >"${latest_snapshot}.sha256"
 
   log "Pruning old snapshots"
 

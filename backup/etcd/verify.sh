@@ -9,14 +9,14 @@ fail() {
   exit 1
 }
 
-[[ -n "${SNAPSHOT_PATH}" ]] ||
-  fail "Usage: $0 /path/to/snapshot"
+[[ -n "${SNAPSHOT_PATH}" ]] \
+  || fail "Usage: $0 /path/to/snapshot"
 
-[[ -f "${SNAPSHOT_PATH}" ]] ||
-  fail "Snapshot not found: ${SNAPSHOT_PATH}"
+[[ -f "${SNAPSHOT_PATH}" ]] \
+  || fail "Snapshot not found: ${SNAPSHOT_PATH}"
 
-[[ -f "${SNAPSHOT_PATH}.sha256" ]] ||
-  fail "Checksum not found: ${SNAPSHOT_PATH}.sha256"
+[[ -f "${SNAPSHOT_PATH}.sha256" ]] \
+  || fail "Checksum not found: ${SNAPSHOT_PATH}.sha256"
 
 sha256sum --check "${SNAPSHOT_PATH}.sha256"
 

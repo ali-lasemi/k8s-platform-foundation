@@ -14,8 +14,8 @@ fail() {
 }
 
 require_command() {
-  command -v "$1" >/dev/null 2>&1 ||
-    fail "Required command not found: $1"
+  command -v "$1" >/dev/null 2>&1 \
+    || fail "Required command not found: $1"
 }
 
 wait_deployment() {

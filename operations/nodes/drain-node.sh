@@ -17,18 +17,18 @@ fail() {
 }
 
 require_command() {
-  command -v "$1" >/dev/null 2>&1 ||
-    fail "Required command not found: $1"
+  command -v "$1" >/dev/null 2>&1 \
+    || fail "Required command not found: $1"
 }
 
 main() {
   require_command kubectl
 
-  [[ -n "${NODE_NAME}" ]] ||
-    fail "Usage: $0 NODE_NAME"
+  [[ -n "${NODE_NAME}" ]] \
+    || fail "Usage: $0 NODE_NAME"
 
-  kubectl get node "${NODE_NAME}" >/dev/null 2>&1 ||
-    fail "Node not found: ${NODE_NAME}"
+  kubectl get node "${NODE_NAME}" >/dev/null 2>&1 \
+    || fail "Node not found: ${NODE_NAME}"
 
   log "Cordoning node ${NODE_NAME}"
   kubectl cordon "${NODE_NAME}"

@@ -1,0 +1,6 @@
+---
+misconfigurations:
+  - id: KSV-0017
+    paths:
+      - validation/fixtures/security/privileged-pod.yaml
+    statement: Intentional negative security-policy validation fixture.

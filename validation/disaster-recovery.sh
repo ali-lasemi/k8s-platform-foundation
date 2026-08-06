@@ -16,19 +16,19 @@ required_scripts=(
 )
 
 for script in "${required_scripts[@]}"; do
-  [[ -x "${script}" ]] ||
-    fail "Script is not executable: ${script}"
+  [[ -x "${script}" ]] \
+    || fail "Script is not executable: ${script}"
 
   bash -n "${script}"
 done
 
-grep -q 'CONFIRM_RESTORE' backup/etcd/restore.sh ||
-  fail "Restore confirmation guard is missing."
+grep -q 'CONFIRM_RESTORE' backup/etcd/restore.sh \
+  || fail "Restore confirmation guard is missing."
 
-grep -q 'sha256sum --check' backup/etcd/verify.sh ||
-  fail "Snapshot checksum verification is missing."
+grep -q 'sha256sum --check' backup/etcd/verify.sh \
+  || fail "Snapshot checksum verification is missing."
 
-grep -q 'Persistent=true' backup/etcd/install-systemd.sh ||
-  fail "Persistent systemd timer configuration is missing."
+grep -q 'Persistent=true' backup/etcd/install-systemd.sh \
+  || fail "Persistent systemd timer configuration is missing."
 
 printf '[INFO] Disaster-recovery static validation passed.\n'

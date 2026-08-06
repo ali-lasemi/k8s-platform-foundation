@@ -10,11 +10,11 @@ fail() {
   exit 1
 }
 
-command -v openssl >/dev/null 2>&1 ||
-  fail "openssl is required."
+command -v openssl >/dev/null 2>&1 \
+  || fail "openssl is required."
 
-[[ -d "${CERT_DIR}" ]] ||
-  fail "Certificate directory not found: ${CERT_DIR}"
+[[ -d "${CERT_DIR}" ]] \
+  || fail "Certificate directory not found: ${CERT_DIR}"
 
 warning_seconds="$((WARNING_DAYS * 86400))"
 current_epoch="$(date +%s)"
@@ -25,14 +25,14 @@ while IFS= read -r certificate; do
     openssl x509 \
       -in "${certificate}" \
       -noout \
-      -enddate |
-      cut -d= -f2-
+      -enddate \
+      | cut -d= -f2-
   )"
 
   expiry_epoch="$(date -d "${expiry}" +%s)"
   remaining="$((expiry_epoch - current_epoch))"
 
-  if (( remaining <= warning_seconds )); then
+  if ((remaining <= warning_seconds)); then
     printf '[WARN] Certificate nearing expiry: %s\n' "${certificate}"
     failed=1
   fi
@@ -43,7 +43,7 @@ done < <(
     -print
 )
 
-(( failed == 0 )) ||
-  fail "One or more certificates expire within ${WARNING_DAYS} days."
+((failed == 0)) \
+  || fail "One or more certificates expire within ${WARNING_DAYS} days."
 
 printf '[INFO] Certificate expiry validation passed.\n'

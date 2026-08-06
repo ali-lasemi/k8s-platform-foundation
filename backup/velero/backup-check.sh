@@ -10,8 +10,8 @@ fail() {
   exit 1
 }
 
-command -v kubectl >/dev/null 2>&1 ||
-  fail "kubectl is required."
+command -v kubectl >/dev/null 2>&1 \
+  || fail "kubectl is required."
 
 kubectl create backup "${BACKUP_NAME}" \
   --namespace velero \
@@ -19,7 +19,7 @@ kubectl create backup "${BACKUP_NAME}" \
 
 end_time="$((SECONDS + 900))"
 
-while (( SECONDS < end_time )); do
+while ((SECONDS < end_time)); do
   phase="$(
     kubectl get backup "${BACKUP_NAME}" \
       --namespace velero \

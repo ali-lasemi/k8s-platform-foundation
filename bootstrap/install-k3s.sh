@@ -33,10 +33,10 @@ main() {
 
   log "Installing k3s ${K3S_VERSION}"
 
-  curl -sfL https://get.k3s.io | \
-    INSTALL_K3S_VERSION="${K3S_VERSION}" \
-    INSTALL_K3S_EXEC="${INSTALL_K3S_EXEC}" \
-    sh -
+  curl -sfL https://get.k3s.io \
+    | INSTALL_K3S_VERSION="${K3S_VERSION}" \
+      INSTALL_K3S_EXEC="${INSTALL_K3S_EXEC}" \
+      sh -
 
   systemctl is-active --quiet k3s || fail "k3s service failed to start."
 

@@ -16,8 +16,8 @@ fail() {
 }
 
 main() {
-  [[ -r "${SOURCE_KUBECONFIG}" ]] ||
-    fail "Cannot read kubeconfig: ${SOURCE_KUBECONFIG}"
+  [[ -r "${SOURCE_KUBECONFIG}" ]] \
+    || fail "Cannot read kubeconfig: ${SOURCE_KUBECONFIG}"
 
   install -d -m 700 "$(dirname "${OUTPUT_KUBECONFIG}")"
   install -m 600 "${SOURCE_KUBECONFIG}" "${OUTPUT_KUBECONFIG}"

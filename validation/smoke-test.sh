@@ -23,8 +23,8 @@ fail() {
 }
 
 require_command() {
-  command -v "$1" >/dev/null 2>&1 ||
-    fail "Required command not found: $1"
+  command -v "$1" >/dev/null 2>&1 \
+    || fail "Required command not found: $1"
 }
 
 main() {
@@ -46,8 +46,8 @@ main() {
     --namespace "${NAMESPACE}" \
     --for=jsonpath='{.status.phase}'=Succeeded \
     pod/dns-check \
-    --timeout="${TIMEOUT}" ||
-    fail "DNS smoke test failed."
+    --timeout="${TIMEOUT}" \
+    || fail "DNS smoke test failed."
 
   log "Testing dynamic persistent storage"
   cat <<EOF | kubectl apply -f -
@@ -90,8 +90,8 @@ EOF
     --namespace "${NAMESPACE}" \
     --for=jsonpath='{.status.phase}'=Succeeded \
     pod/storage-check \
-    --timeout="${TIMEOUT}" ||
-    fail "Storage smoke test failed."
+    --timeout="${TIMEOUT}" \
+    || fail "Storage smoke test failed."
 
   log "Cluster smoke tests passed."
 }

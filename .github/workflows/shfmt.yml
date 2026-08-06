@@ -20,12 +20,20 @@ jobs:
 
       - name: Check shell formatting
         run: |
+          mapfile -t scripts < <(
+            find \
+              bootstrap \
+              scripts \
+              validation \
+              backup \
+              operations \
+              -type f \
+              -name '*.sh' \
+              -print
+          )
+
           docker run --rm \
             -v "$PWD:/mnt" \
             mvdan/shfmt:v3.12.0 \
             -d -i 2 -ci -bn \
-            /mnt/bootstrap \
-            /mnt/scripts \
-            /mnt/validation \
-            /mnt/backup \
-            /mnt/operations
+            "${scripts[@]/#//mnt/}"

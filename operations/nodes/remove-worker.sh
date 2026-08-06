@@ -15,17 +15,17 @@ fail() {
 }
 
 main() {
-  command -v kubectl >/dev/null 2>&1 ||
-    fail "kubectl is required."
+  command -v kubectl >/dev/null 2>&1 \
+    || fail "kubectl is required."
 
-  [[ -n "${NODE_NAME}" ]] ||
-    fail "Usage: $0 NODE_NAME"
+  [[ -n "${NODE_NAME}" ]] \
+    || fail "Usage: $0 NODE_NAME"
 
-  [[ "${CONFIRM_REMOVE}" == "true" ]] ||
-    fail "Set CONFIRM_REMOVE=true to remove the node."
+  [[ "${CONFIRM_REMOVE}" == "true" ]] \
+    || fail "Set CONFIRM_REMOVE=true to remove the node."
 
-  kubectl get node "${NODE_NAME}" >/dev/null 2>&1 ||
-    fail "Node not found: ${NODE_NAME}"
+  kubectl get node "${NODE_NAME}" >/dev/null 2>&1 \
+    || fail "Node not found: ${NODE_NAME}"
 
   log "Draining node ${NODE_NAME}"
 

@@ -14,7 +14,7 @@ TIMER_TARGET="/etc/systemd/system/k3s-etcd-snapshot.timer"
 
 install -m 0755 "${SCRIPT_SOURCE}" "${SCRIPT_TARGET}"
 
-cat > "${SERVICE_TARGET}" <<'EOF'
+cat >"${SERVICE_TARGET}" <<'EOF'
 [Unit]
 Description=Create and verify k3s etcd snapshot
 Requires=k3s.service
@@ -34,7 +34,7 @@ ProtectSystem=strict
 ReadWritePaths=/var/lib/rancher/k3s/server/db/snapshots
 EOF
 
-cat > "${TIMER_TARGET}" <<'EOF'
+cat >"${TIMER_TARGET}" <<'EOF'
 [Unit]
 Description=Run k3s etcd snapshot every six hours
 

@@ -9,8 +9,8 @@ fail() {
   exit 1
 }
 
-command -v kubectl >/dev/null 2>&1 ||
-  fail "kubectl is required."
+command -v kubectl >/dev/null 2>&1 \
+  || fail "kubectl is required."
 
 kubectl rollout status \
   deployment/velero \
@@ -27,8 +27,8 @@ available="$(
     -o jsonpath='{.status.phase}'
 )"
 
-[[ "${available}" == "Available" ]] ||
-  fail "Velero backup storage location is not available."
+[[ "${available}" == "Available" ]] \
+  || fail "Velero backup storage location is not available."
 
 kubectl get schedules \
   --namespace velero \

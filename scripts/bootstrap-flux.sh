@@ -17,8 +17,8 @@ fail() {
 }
 
 require_command() {
-  command -v "$1" >/dev/null 2>&1 ||
-    fail "Required command not found: $1"
+  command -v "$1" >/dev/null 2>&1 \
+    || fail "Required command not found: $1"
 }
 
 main() {
@@ -30,8 +30,8 @@ main() {
     log "Installing Flux CLI ${FLUX_VERSION}"
 
     curl -sSfL \
-      "https://github.com/fluxcd/flux2/releases/download/v${FLUX_VERSION}/flux_${FLUX_VERSION}_linux_amd64.tar.gz" |
-      tar -xz -C /usr/local/bin flux
+      "https://github.com/fluxcd/flux2/releases/download/v${FLUX_VERSION}/flux_${FLUX_VERSION}_linux_amd64.tar.gz" \
+      | tar -xz -C /usr/local/bin flux
 
     chmod 0755 /usr/local/bin/flux
   fi

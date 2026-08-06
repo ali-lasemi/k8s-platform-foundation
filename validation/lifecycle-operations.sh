@@ -21,22 +21,22 @@ scripts=(
 )
 
 for script in "${scripts[@]}"; do
-  [[ -f "${script}" ]] ||
-    fail "Missing script: ${script}"
+  [[ -f "${script}" ]] \
+    || fail "Missing script: ${script}"
 
   bash -n "${script}"
 done
 
-grep -q 'CONFIRM_UPGRADE' operations/upgrade/upgrade-server.sh ||
-  fail "Upgrade confirmation guard is missing."
+grep -q 'CONFIRM_UPGRADE' operations/upgrade/upgrade-server.sh \
+  || fail "Upgrade confirmation guard is missing."
 
-grep -q 'CONFIRM_ROLLBACK' operations/upgrade/rollback-server.sh ||
-  fail "Rollback confirmation guard is missing."
+grep -q 'CONFIRM_ROLLBACK' operations/upgrade/rollback-server.sh \
+  || fail "Rollback confirmation guard is missing."
 
-grep -q 'CONFIRM_REMOVE' operations/nodes/remove-worker.sh ||
-  fail "Node removal confirmation guard is missing."
+grep -q 'CONFIRM_REMOVE' operations/nodes/remove-worker.sh \
+  || fail "Node removal confirmation guard is missing."
 
-grep -q 'CONFIRM_ROTATION' operations/certificates/rotate-k3s-certificates.sh ||
-  fail "Certificate rotation confirmation guard is missing."
+grep -q 'CONFIRM_ROTATION' operations/certificates/rotate-k3s-certificates.sh \
+  || fail "Certificate rotation confirmation guard is missing."
 
 printf '[INFO] Lifecycle operation validation passed.\n'
