@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help install join uninstall validate smoke-test apply-foundation export-kubeconfig
+.PHONY: help install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig
 
 help:
 @echo "Available targets:"
@@ -9,7 +9,9 @@ help:
 @echo "  make uninstall            Remove k3s"
 @echo "  make validate             Validate cluster health"
 @echo "  make smoke-test           Run DNS and storage smoke tests"
-@echo "  make apply-foundation     Apply namespaces and network policies"
+@echo "  make platform-health      Validate platform services"
+@echo "  make apply-foundation     Apply the cluster foundation"
+@echo "  make bootstrap-flux       Install and configure Flux"
 @echo "  make export-kubeconfig    Export the k3s kubeconfig"
 
 install:
@@ -27,9 +29,14 @@ validate:
 smoke-test:
 ./validation/smoke-test.sh
 
+platform-health:
+./validation/platform-health.sh
+
 apply-foundation:
-kubectl apply -k cluster/namespaces
-kubectl apply -k cluster/network
+kubectl apply -k clusters/homelab
+
+bootstrap-flux:
+sudo ./scripts/bootstrap-flux.sh
 
 export-kubeconfig:
 sudo ./scripts/export-kubeconfig.sh

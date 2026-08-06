@@ -1,0 +1,119 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: traefik
+  namespace: traefik-system
+spec:
+  interval: 30m
+  timeout: 10m
+
+  chart:
+    spec:
+      chart: traefik
+      version: 40.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: traefik
+        namespace: flux-system
+      interval: 1h
+
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+
+  values:
+    deployment:
+      replicas: 2
+
+    ingressClass:
+      enabled: true
+      isDefaultClass: true
+
+    providers:
+      kubernetesIngress:
+        enabled: true
+        publishedService:
+          enabled: true
+
+      kubernetesGateway:
+        enabled: false
+
+    service:
+      type: LoadBalancer
+      spec:
+        externalTrafficPolicy: Local
+
+    ports:
+      web:
+        port: 8000
+        exposedPort: 80
+        expose:
+          default: true
+        redirections:
+          entryPoint:
+            to: websecure
+            scheme: https
+            permanent: true
+
+      websecure:
+        port: 8443
+        exposedPort: 443
+        expose:
+          default: true
+        tls:
+          enabled: true
+
+    logs:
+      general:
+        level: INFO
+
+      access:
+        enabled: true
+
+    metrics:
+      prometheus:
+        enabled: true
+        service:
+          enabled: true
+        serviceMonitor:
+          enabled: false
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 65532
+      runAsGroup: 65532
+      fsGroup: 65532
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: traefik
+
+    priorityClassName: system-cluster-critical
