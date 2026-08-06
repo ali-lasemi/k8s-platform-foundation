@@ -1,0 +1,28 @@
+---
+name: Lifecycle validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  lifecycle:
+    name: Lifecycle operation validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Validate lifecycle scripts
+        run: |
+          chmod +x operations/nodes/*.sh
+          chmod +x operations/upgrade/*.sh
+          chmod +x operations/certificates/*.sh
+          chmod +x validation/lifecycle-operations.sh
+          ./validation/lifecycle-operations.sh

@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate backup-create backup-verify backup-install-timer velero-validate backup-live-test dr-validate
+.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate backup-create backup-verify backup-install-timer velero-validate backup-live-test dr-validate node-drain node-uncordon node-remove node-validate upgrade-preflight upgrade-server upgrade-agent rollback-server certificate-rotate certificate-check lifecycle-validate
 
 help:
 @echo "Available targets:"
@@ -59,3 +59,33 @@ backup-live-test:
 
 dr-validate:
 ./validation/disaster-recovery.sh
+node-drain:
+./operations/nodes/drain-node.sh "$(NODE)"
+
+node-uncordon:
+./operations/nodes/uncordon-node.sh "$(NODE)"
+
+node-remove:
+CONFIRM_REMOVE=true ./operations/nodes/remove-worker.sh "$(NODE)"
+
+node-validate:
+./operations/nodes/validate-node.sh "$(NODE)"
+upgrade-preflight:
+TARGET_VERSION="$(VERSION)" ./operations/upgrade/preflight.sh
+
+upgrade-server:
+sudo TARGET_VERSION="$(VERSION)" CONFIRM_UPGRADE=true ./operations/upgrade/upgrade-server.sh
+
+upgrade-agent:
+sudo TARGET_VERSION="$(VERSION)" K3S_URL="$(K3S_URL)" K3S_TOKEN="$(K3S_TOKEN)" CONFIRM_UPGRADE=true ./operations/upgrade/upgrade-agent.sh
+
+rollback-server:
+sudo ROLLBACK_VERSION="$(VERSION)" CONFIRM_ROLLBACK=true ./operations/upgrade/rollback-server.sh
+certificate-rotate:
+sudo CONFIRM_ROTATION=true ./operations/certificates/rotate-k3s-certificates.sh
+
+certificate-check:
+sudo ./operations/certificates/check-expiry.sh
+
+lifecycle-validate:
+./validation/lifecycle-operations.sh
