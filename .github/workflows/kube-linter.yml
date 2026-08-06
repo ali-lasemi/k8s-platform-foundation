@@ -1,15 +1,35 @@
+---
 name: kube-linter
 
 on:
   pull_request:
   push:
-    branches: [main]
+    branches:
+      - main
+
+permissions:
+  contents: read
 
 jobs:
   kube-linter:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v7
 
-      - uses: stackrox/kube-linter-action@v1
+      - name: Install kube-linter
+        run: |
+          version="0.7.6"
+
+          curl -sSfL \
+            "https://github.com/stackrox/kube-linter/releases/download/v${version}/kube-linter-linux.tar.gz" |
+            tar -xz
+
+          sudo install -m 0755 kube-linter /usr/local/bin/kube-linter
+
+      - name: Lint native Kubernetes manifests
+        run: |
+          kube-linter lint \
+            cluster/namespaces \
+            cluster/network

@@ -1,48 +1,57 @@
+---
 name: Integration
 
 on:
   push:
-    branches: [main]
-
+    branches:
+      - main
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-
   integration:
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 30
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
 
-      - uses: actions/checkout@v4
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1
 
-      - uses: helm/kind-action@v1
-
-      - name: Wait Cluster
+      - name: Wait for cluster
         run: |
           kubectl cluster-info
-          kubectl wait node --all --for=condition=Ready --timeout=180s
+          kubectl wait \
+            node \
+            --all \
+            --for=condition=Ready \
+            --timeout=180s
 
-      - name: Apply Foundation
+      - name: Apply foundation
         run: |
           kubectl apply -k cluster/namespaces
           kubectl apply -k cluster/network
 
-      - name: Smoke Tests
+      - name: Validate cluster
         run: |
           chmod +x validation/*.sh
           ./validation/cluster-health.sh
 
-      - name: Upload Logs
+      - name: Collect cluster state
         if: always()
+        run: |
+          chmod +x scripts/export-cluster-state.sh
+          ./scripts/export-cluster-state.sh
 
-        uses: actions/upload-artifact@v4
-
+      - name: Upload cluster state
+        if: always()
+        uses: actions/upload-artifact@v7
         with:
-
           name: cluster-state
-
-          path: |
-            /tmp/*
+          path: /tmp/k8s-platform
+          if-no-files-found: error
+          retention-days: 7

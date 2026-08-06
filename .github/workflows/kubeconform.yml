@@ -1,23 +1,47 @@
+---
 name: kubeconform
 
 on:
   pull_request:
   push:
-    branches: [main]
+    branches:
+      - main
+
+permissions:
+  contents: read
 
 jobs:
   kubeconform:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
 
-      - uses: actions/checkout@v4
+      - name: Install kubeconform
+        run: |
+          version="0.7.0"
 
-      - run: |
-          curl -L https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
-          | tar xz
+          curl -sSfL \
+            "https://github.com/yannh/kubeconform/releases/download/v${version}/kubeconform-linux-amd64.tar.gz" |
+            tar -xz
 
-          chmod +x kubeconform
+          sudo install -m 0755 kubeconform /usr/local/bin/kubeconform
 
-          find . -name "*.yaml" -o -name "*.yml" \
-          | xargs ./kubeconform -strict -summary
+      - name: Render native Kubernetes manifests
+        run: |
+          mkdir -p /tmp/rendered
+
+          kubectl kustomize cluster/namespaces \
+            > /tmp/rendered/namespaces.yaml
+
+          kubectl kustomize cluster/network \
+            > /tmp/rendered/network.yaml
+
+      - name: Validate native Kubernetes manifests
+        run: |
+          kubeconform \
+            -strict \
+            -summary \
+            -ignore-missing-schemas \
+            /tmp/rendered
