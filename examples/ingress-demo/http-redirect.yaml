@@ -1,0 +1,26 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-demo-http
+  namespace: ingress-demo
+  labels:
+    app.kubernetes.io/name: ingress-demo-http
+    app.kubernetes.io/part-of: k8s-platform-foundation
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-system-https-redirect@kubernetescrd
+spec:
+  ingressClassName: traefik
+
+  rules:
+    - host: demo.platform.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ingress-demo
+                port:
+                  name: http

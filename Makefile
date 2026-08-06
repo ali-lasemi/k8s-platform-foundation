@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate backup-create backup-verify backup-install-timer velero-validate backup-live-test dr-validate node-drain node-uncordon node-remove node-validate upgrade-preflight upgrade-server upgrade-agent rollback-server certificate-rotate certificate-check lifecycle-validate sops-validate sops-generate-key sops-update-recipient sops-bootstrap sops-rotate
+.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate backup-create backup-verify backup-install-timer velero-validate backup-live-test dr-validate node-drain node-uncordon node-remove node-validate upgrade-preflight upgrade-server upgrade-agent rollback-server certificate-rotate certificate-check lifecycle-validate sops-validate sops-generate-key sops-update-recipient sops-bootstrap sops-rotate ingress-dns-validate ingress-dns-health
 
 help:
 @echo "Available targets:"
@@ -103,3 +103,8 @@ sops-bootstrap:
 pwsh -File ./scripts/bootstrap-sops-age.ps1
 sops-rotate:
 pwsh -File ./scripts/rotate-sops-age-key.ps1 -NewRecipient "$(AGE_RECIPIENT)"
+ingress-dns-validate:
+pwsh -File ./validation/ingress-dns-static.ps1
+
+ingress-dns-health:
+./validation/ingress-dns-health.sh

@@ -1,0 +1,61 @@
+---
+name: Ingress and DNS validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  static-validation:
+    name: Ingress and DNS static validation
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Validate ingress and DNS configuration
+        shell: pwsh
+        run: |
+          ./validation/ingress-dns-static.ps1
+
+  render-validation:
+    name: Render ingress and DNS manifests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Render Traefik configuration
+        run: |
+          kubectl kustomize platform/traefik \
+            > /tmp/traefik.yaml
+
+          test -s /tmp/traefik.yaml
+
+      - name: Render cert-manager configuration
+        run: |
+          kubectl kustomize platform/cert-manager \
+            > /tmp/cert-manager.yaml
+
+          test -s /tmp/cert-manager.yaml
+
+      - name: Render ExternalDNS configuration
+        run: |
+          kubectl kustomize platform/external-dns \
+            > /tmp/external-dns.yaml
+
+          test -s /tmp/external-dns.yaml
+
+      - name: Render ingress demo
+        run: |
+          kubectl kustomize examples/ingress-demo \
+            > /tmp/ingress-demo.yaml
+
+          test -s /tmp/ingress-demo.yaml

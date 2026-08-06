@@ -1,0 +1,36 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-demo
+  namespace: ingress-demo
+  labels:
+    app.kubernetes.io/name: ingress-demo
+    app.kubernetes.io/part-of: k8s-platform-foundation
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    external-dns.alpha.kubernetes.io/hostname: demo.platform.example.com
+    external-dns.alpha.kubernetes.io/ttl: "120"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: ingress-demo-ingress-demo-secure-chain@kubernetescrd
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.options: traefik-system-default@kubernetescrd
+spec:
+  ingressClassName: traefik
+
+  tls:
+    - hosts:
+        - demo.platform.example.com
+      secretName: ingress-demo-tls
+
+  rules:
+    - host: demo.platform.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ingress-demo
+                port:
+                  name: http

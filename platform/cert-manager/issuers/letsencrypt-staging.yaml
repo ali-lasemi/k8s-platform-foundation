@@ -1,0 +1,21 @@
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+  labels:
+    app.kubernetes.io/name: letsencrypt-staging
+    app.kubernetes.io/part-of: k8s-platform-foundation
+    app.kubernetes.io/managed-by: flux
+spec:
+  acme:
+    email: platform-admin@example.com
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+
+    privateKeySecretRef:
+      name: letsencrypt-staging-account-key
+
+    solvers:
+      - http01:
+          ingress:
+            class: traefik

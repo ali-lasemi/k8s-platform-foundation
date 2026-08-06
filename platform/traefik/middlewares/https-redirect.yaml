@@ -1,0 +1,14 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: https-redirect
+  namespace: traefik-system
+  labels:
+    app.kubernetes.io/name: https-redirect
+    app.kubernetes.io/part-of: k8s-platform-foundation
+    app.kubernetes.io/managed-by: flux
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true

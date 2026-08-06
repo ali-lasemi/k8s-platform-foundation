@@ -1,0 +1,18 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: TLSOption
+metadata:
+  name: default
+  namespace: traefik-system
+  labels:
+    app.kubernetes.io/name: default-tls-options
+    app.kubernetes.io/part-of: k8s-platform-foundation
+    app.kubernetes.io/managed-by: flux
+spec:
+  minVersion: VersionTLS12
+  sniStrict: true
+  cipherSuites:
+    - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+    - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+    - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+    - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384

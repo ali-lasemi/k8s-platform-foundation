@@ -10,3 +10,5 @@ resources:
   - observability.yaml
   - backup.yaml
   - secrets.yaml
+  - external-dns.yaml
+  - ingress-demo.yaml
