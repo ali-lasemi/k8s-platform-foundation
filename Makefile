@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate backup-create backup-verify backup-install-timer velero-validate backup-live-test dr-validate node-drain node-uncordon node-remove node-validate upgrade-preflight upgrade-server upgrade-agent rollback-server certificate-rotate certificate-check lifecycle-validate
+.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate backup-create backup-verify backup-install-timer velero-validate backup-live-test dr-validate node-drain node-uncordon node-remove node-validate upgrade-preflight upgrade-server upgrade-agent rollback-server certificate-rotate certificate-check lifecycle-validate sops-validate sops-generate-key sops-update-recipient sops-bootstrap sops-rotate
 
 help:
 @echo "Available targets:"
@@ -89,3 +89,17 @@ sudo ./operations/certificates/check-expiry.sh
 
 lifecycle-validate:
 ./validation/lifecycle-operations.sh
+sops-validate:
+pwsh -File ./validation/sops-foundation.ps1
+pwsh -File ./validation/encrypted-secrets.ps1
+
+sops-generate-key:
+pwsh -File ./scripts/generate-age-key.ps1
+
+sops-update-recipient:
+pwsh -File ./scripts/update-sops-age-recipient.ps1
+
+sops-bootstrap:
+pwsh -File ./scripts/bootstrap-sops-age.ps1
+sops-rotate:
+pwsh -File ./scripts/rotate-sops-age-key.ps1 -NewRecipient "$(AGE_RECIPIENT)"

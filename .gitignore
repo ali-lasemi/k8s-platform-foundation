@@ -3,3 +3,8 @@
 .vscode/
 .env
 *.log
+.config/sops/age/
+**/keys.txt
+**/*.agekey
+**/*.decrypted.yaml
+**/*.plaintext.yaml

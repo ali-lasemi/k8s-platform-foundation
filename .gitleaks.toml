@@ -1,0 +1,18 @@
+title = "k8s-platform-foundation Gitleaks configuration"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Allow documented placeholder values"
+regexes = [
+  '''replace-me''',
+  '''AGE_PUBLIC_KEY_REPLACE_ME''',
+  '''REPLACE_WITH_[A-Z0-9_]+'''
+]
+
+paths = [
+  '''secrets/examples/.*\.template\.yaml''',
+  '''docs/.*\.md''',
+  '''README\.md'''
+]
