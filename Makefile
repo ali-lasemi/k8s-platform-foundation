@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig
+.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate
 
 help:
 @echo "Available targets:"
@@ -42,3 +42,5 @@ export-kubeconfig:
 sudo ./scripts/export-kubeconfig.sh
 security-validate:
 ./validation/security-baseline.sh
+observability-validate:
+./validation/observability-health.sh

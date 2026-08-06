@@ -1,0 +1,121 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: platform-alerts
+  namespace: observability
+  labels:
+    app.kubernetes.io/name: platform-alerts
+    app.kubernetes.io/managed-by: k8s-platform-foundation
+spec:
+  groups:
+    - name: platform.availability
+      rules:
+        - alert: KubernetesNodeNotReady
+          expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: Kubernetes node is not ready
+            description: Node {{ $labels.node }} has been unready for more than 10 minutes.
+
+        - alert: KubernetesPodCrashLooping
+          expr: |
+            increase(
+              kube_pod_container_status_restarts_total[15m]
+            ) > 3
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: Pod is repeatedly restarting
+            description: Pod {{ $labels.namespace }}/{{ $labels.pod }} is crash looping.
+
+        - alert: KubernetesDeploymentReplicasUnavailable
+          expr: |
+            kube_deployment_status_replicas_unavailable > 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: Deployment has unavailable replicas
+            description: Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has unavailable replicas.
+
+    - name: platform.resources
+      rules:
+        - alert: KubernetesNodeMemoryPressure
+          expr: kube_node_status_condition{condition="MemoryPressure",status="true"} == 1
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: Node is under memory pressure
+            description: Node {{ $labels.node }} reports memory pressure.
+
+        - alert: KubernetesNodeDiskPressure
+          expr: kube_node_status_condition{condition="DiskPressure",status="true"} == 1
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: Node is under disk pressure
+            description: Node {{ $labels.node }} reports disk pressure.
+
+        - alert: PersistentVolumeClaimNearlyFull
+          expr: |
+            (
+              kubelet_volume_stats_available_bytes
+              /
+              kubelet_volume_stats_capacity_bytes
+            ) < 0.15
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: Persistent volume is nearly full
+            description: PVC {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} has less than 15 percent free space.
+
+        - alert: PersistentVolumeClaimCritical
+          expr: |
+            (
+              kubelet_volume_stats_available_bytes
+              /
+              kubelet_volume_stats_capacity_bytes
+            ) < 0.05
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: Persistent volume is critically full
+            description: PVC {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} has less than 5 percent free space.
+
+    - name: platform.gitops
+      rules:
+        - alert: FluxKustomizationNotReady
+          expr: |
+            gotk_reconcile_condition{
+              type="Ready",
+              status="False",
+              kind="Kustomization"
+            } == 1
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: Flux Kustomization reconciliation failed
+            description: Flux Kustomization {{ $labels.namespace }}/{{ $labels.name }} is not ready.
+
+        - alert: FluxHelmReleaseNotReady
+          expr: |
+            gotk_reconcile_condition{
+              type="Ready",
+              status="False",
+              kind="HelmRelease"
+            } == 1
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: Flux HelmRelease reconciliation failed
+            description: Flux HelmRelease {{ $labels.namespace }}/{{ $labels.name }} is not ready.

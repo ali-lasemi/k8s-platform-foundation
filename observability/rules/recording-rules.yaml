@@ -1,0 +1,49 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: platform-recording-rules
+  namespace: observability
+  labels:
+    app.kubernetes.io/name: platform-recording-rules
+    app.kubernetes.io/managed-by: k8s-platform-foundation
+spec:
+  groups:
+    - name: platform.recording
+      interval: 30s
+      rules:
+        - record: platform:node_cpu_utilisation:ratio
+          expr: |
+            1 - avg by (instance) (
+              rate(
+                node_cpu_seconds_total{mode="idle"}[5m]
+              )
+            )
+
+        - record: platform:node_memory_utilisation:ratio
+          expr: |
+            1 - (
+              node_memory_MemAvailable_bytes
+              /
+              node_memory_MemTotal_bytes
+            )
+
+        - record: platform:namespace_cpu_usage:rate5m
+          expr: |
+            sum by (namespace) (
+              rate(
+                container_cpu_usage_seconds_total{
+                  container!="",
+                  image!=""
+                }[5m]
+              )
+            )
+
+        - record: platform:namespace_memory_working_set:bytes
+          expr: |
+            sum by (namespace) (
+              container_memory_working_set_bytes{
+                container!="",
+                image!=""
+              }
+            )
