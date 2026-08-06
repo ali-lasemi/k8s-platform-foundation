@@ -1,0 +1,23 @@
+name: kubeconform
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  kubeconform:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - run: |
+          curl -L https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
+          | tar xz
+
+          chmod +x kubeconform
+
+          find . -name "*.yaml" -o -name "*.yml" \
+          | xargs ./kubeconform -strict -summary

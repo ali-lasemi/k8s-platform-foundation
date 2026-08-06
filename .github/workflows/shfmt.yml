@@ -1,0 +1,19 @@
+name: shfmt
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  shfmt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: |
+          docker run --rm \
+            -v "$PWD:/mnt" \
+            mvdan/shfmt:latest \
+            -d /mnt
