@@ -1,0 +1,47 @@
+---
+name: Kubernetes policy tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  structure:
+    name: Policy test structure
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Validate policy test coverage
+        shell: pwsh
+        run: |
+          ./validation/policy-tests.ps1
+
+  kyverno-cli:
+    name: Kyverno regression tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install Kyverno CLI
+        run: |
+          version="1.15.2"
+
+          curl -sSfL \
+            "https://github.com/kyverno/kyverno/releases/download/v${version}/kyverno-cli_v${version}_linux_x86_64.tar.gz" |
+            tar -xz
+
+          sudo install -m 0755 kyverno /usr/local/bin/kyverno
+
+      - name: Run Kyverno test suite
+        run: |
+          kyverno test policy-tests

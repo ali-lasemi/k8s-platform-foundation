@@ -1,0 +1,126 @@
+---
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: kubernetes-security-baseline
+policies:
+  - ../security/policies/kyverno/disallow-privileged.yaml
+  - ../security/policies/kyverno/disallow-host-path.yaml
+  - ../security/policies/kyverno/disallow-host-namespaces.yaml
+  - ../security/policies/kyverno/disallow-latest-tag.yaml
+  - ../security/policies/kyverno/require-resources.yaml
+  - ../security/policies/kyverno/require-read-only-root-filesystem.yaml
+  - ../security/policies/kyverno/disable-service-account-token.yaml
+  - ../security/policies/kyverno/require-non-root.yaml
+  - ../security/policies/kyverno/require-seccomp.yaml
+  - ../security/policies/kyverno/drop-capabilities.yaml
+  - ../security/policies/kyverno/require-standard-labels.yaml
+
+resources:
+  - fixtures/compliant/pod.yaml
+  - fixtures/noncompliant/privileged-pod.yaml
+  - fixtures/noncompliant/host-path-pod.yaml
+  - fixtures/noncompliant/host-namespace-pod.yaml
+  - fixtures/noncompliant/latest-tag-pod.yaml
+  - fixtures/noncompliant/missing-resources-pod.yaml
+  - fixtures/noncompliant/writable-root-pod.yaml
+  - fixtures/noncompliant/service-account-token-pod.yaml
+
+results:
+  - policy: disallow-privileged
+    rule: disallow-privileged-containers
+    resources:
+      - privileged-pod
+    kind: Pod
+    result: fail
+
+  - policy: disallow-host-path
+    rule: disallow-host-path-volumes
+    resources:
+      - host-path-pod
+    kind: Pod
+    result: fail
+
+  - policy: disallow-host-namespaces
+    rule: disallow-host-namespaces
+    resources:
+      - host-namespace-pod
+    kind: Pod
+    result: fail
+
+  - policy: disallow-latest-tag
+    rule: require-image-tag
+    resources:
+      - latest-tag-pod
+    kind: Pod
+    result: fail
+
+  - policy: require-resources
+    rule: require-requests-and-limits
+    resources:
+      - missing-resources-pod
+    kind: Pod
+    result: fail
+
+  - policy: require-read-only-root-filesystem
+    rule: require-read-only-root-filesystem
+    resources:
+      - writable-root-pod
+    kind: Pod
+    result: fail
+
+  - policy: disable-service-account-token
+    rule: disable-automount-service-account-token
+    resources:
+      - service-account-token-pod
+    kind: Pod
+    result: fail
+
+  - policy: require-non-root
+    rule: require-run-as-non-root
+    resources:
+      - compliant-pod
+    kind: Pod
+    result: pass
+
+  - policy: require-seccomp
+    rule: require-runtime-default-seccomp
+    resources:
+      - compliant-pod
+    kind: Pod
+    result: pass
+
+  - policy: drop-capabilities
+    rule: require-drop-all-capabilities
+    resources:
+      - compliant-pod
+    kind: Pod
+    result: pass
+
+  - policy: require-resources
+    rule: require-requests-and-limits
+    resources:
+      - compliant-pod
+    kind: Pod
+    result: pass
+
+  - policy: require-read-only-root-filesystem
+    rule: require-read-only-root-filesystem
+    resources:
+      - compliant-pod
+    kind: Pod
+    result: pass
+
+  - policy: disable-service-account-token
+    rule: disable-automount-service-account-token
+    resources:
+      - compliant-pod
+    kind: Pod
+    result: pass
+
+  - policy: require-standard-labels
+    rule: require-standard-labels
+    resources:
+      - compliant-pod
+    kind: Pod
+    result: pass

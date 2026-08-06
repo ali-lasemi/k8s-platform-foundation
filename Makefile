@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate backup-create backup-verify backup-install-timer velero-validate backup-live-test dr-validate node-drain node-uncordon node-remove node-validate upgrade-preflight upgrade-server upgrade-agent rollback-server certificate-rotate certificate-check lifecycle-validate sops-validate sops-generate-key sops-update-recipient sops-bootstrap sops-rotate ingress-dns-validate ingress-dns-health
+.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate backup-create backup-verify backup-install-timer velero-validate backup-live-test dr-validate node-drain node-uncordon node-remove node-validate upgrade-preflight upgrade-server upgrade-agent rollback-server certificate-rotate certificate-check lifecycle-validate sops-validate sops-generate-key sops-update-recipient sops-bootstrap sops-rotate ingress-dns-validate ingress-dns-health policy-test policy-test-validate policy-admission-test
 
 help:
 @echo "Available targets:"
@@ -108,3 +108,11 @@ pwsh -File ./validation/ingress-dns-static.ps1
 
 ingress-dns-health:
 ./validation/ingress-dns-health.sh
+policy-test:
+kyverno test policy-tests
+
+policy-test-validate:
+pwsh -File ./validation/policy-tests.ps1
+
+policy-admission-test:
+./validation/policy-admission-test.sh

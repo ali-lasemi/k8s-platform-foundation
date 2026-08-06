@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: host-path-pod
+  namespace: platform-system
+  labels:
+    app.kubernetes.io/name: host-path-pod
+    app.kubernetes.io/part-of: k8s-platform-foundation
+    app.kubernetes.io/managed-by: flux
+spec:
+  volumes:
+    - name: host-root
+      hostPath:
+        path: /
+        type: Directory
+
+  containers:
+    - name: application
+      image: nginx:1.27.4
+      volumeMounts:
+        - name: host-root
+          mountPath: /host
