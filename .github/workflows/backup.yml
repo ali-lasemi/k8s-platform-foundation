@@ -1,0 +1,32 @@
+---
+name: Backup validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  disaster-recovery:
+    name: Disaster recovery validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Validate recovery scripts
+        run: |
+          chmod +x backup/etcd/*.sh
+          chmod +x backup/velero/*.sh
+          chmod +x validation/disaster-recovery.sh
+          ./validation/disaster-recovery.sh
+
+      - name: Validate backup manifests
+        run: |
+          kubectl kustomize backup/velero >/tmp/velero.yaml
+          test -s /tmp/velero.yaml

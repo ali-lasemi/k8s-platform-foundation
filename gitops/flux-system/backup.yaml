@@ -1,0 +1,28 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: backup
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: cluster-foundation
+    - name: observability
+
+  interval: 10m
+  retryInterval: 1m
+  timeout: 15m
+  wait: true
+  prune: true
+
+  sourceRef:
+    kind: GitRepository
+    name: k8s-platform-foundation
+
+  path: ./backup/velero
+
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: velero
+      namespace: velero

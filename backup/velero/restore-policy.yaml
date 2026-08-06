@@ -1,0 +1,17 @@
+---
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: platform-restore-template
+  namespace: velero
+spec:
+  backupName: platform-on-demand
+  includedNamespaces:
+    - platform-system
+    - observability
+    - cert-manager
+    - traefik-system
+    - metallb-system
+    - kyverno
+  restorePVs: true
+  preserveNodePorts: true

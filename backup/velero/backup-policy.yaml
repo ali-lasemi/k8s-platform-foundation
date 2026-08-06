@@ -1,0 +1,18 @@
+---
+apiVersion: velero.io/v1
+kind: Backup
+metadata:
+  name: platform-on-demand
+  namespace: velero
+spec:
+  includedNamespaces:
+    - platform-system
+    - observability
+    - cert-manager
+    - traefik-system
+    - metallb-system
+    - kyverno
+  snapshotVolumes: false
+  defaultVolumesToFsBackup: true
+  storageLocation: default
+  ttl: 336h

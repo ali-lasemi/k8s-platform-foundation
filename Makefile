@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate
+.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate backup-create backup-verify backup-install-timer velero-validate backup-live-test dr-validate
 
 help:
 @echo "Available targets:"
@@ -44,3 +44,18 @@ security-validate:
 ./validation/security-baseline.sh
 observability-validate:
 ./validation/observability-health.sh
+backup-create:
+sudo ./backup/etcd/snapshot.sh
+
+backup-verify:
+sudo ./validation/backup-health.sh
+
+backup-install-timer:
+sudo ./backup/etcd/install-systemd.sh
+velero-validate:
+./validation/velero-health.sh
+backup-live-test:
+./backup/velero/backup-check.sh
+
+dr-validate:
+./validation/disaster-recovery.sh

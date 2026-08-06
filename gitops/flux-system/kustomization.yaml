@@ -8,3 +8,4 @@ resources:
   - security-controller.yaml
   - security-policies.yaml
   - observability.yaml
+  - backup.yaml
