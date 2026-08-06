@@ -1,0 +1,69 @@
+---
+name: Validate
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run ShellCheck
+        run: |
+          find bootstrap validation scripts \
+            -type f \
+            -name '*.sh' \
+            -print0 |
+          xargs -0 --no-run-if-empty shellcheck
+
+  yaml:
+    name: YAML lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Run yamllint
+        run: yamllint .
+
+  repository:
+    name: Repository validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate line endings
+        shell: bash
+        run: |
+          if grep -rIl $'\r' \
+            --include='*.sh' \
+            --include='Makefile' \
+            .; then
+            echo "CRLF line endings detected."
+            exit 1
+          fi
+
+      - name: Validate shell syntax
+        run: |
+          find bootstrap validation scripts \
+            -type f \
+            -name '*.sh' \
+            -print0 |
+          xargs -0 --no-run-if-empty -n1 bash -n
