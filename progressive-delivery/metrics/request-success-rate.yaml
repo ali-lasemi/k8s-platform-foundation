@@ -1,0 +1,31 @@
+---
+apiVersion: flagger.app/v1beta1
+kind: MetricTemplate
+metadata:
+  name: request-success-rate
+  namespace: ingress-demo
+spec:
+  provider:
+    type: prometheus
+    address: >-
+      http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+  query: |
+    100 - (
+      sum(
+        rate(
+          traefik_service_requests_total{
+            service=~"{{ namespace }}-{{ target }}-canary-.*",
+            code=~"5.*"
+          }[1m]
+        )
+      )
+      /
+      sum(
+        rate(
+          traefik_service_requests_total{
+            service=~"{{ namespace }}-{{ target }}-canary-.*"
+          }[1m]
+        )
+      )
+      * 100
+    )

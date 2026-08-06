@@ -1,0 +1,15 @@
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: progressive-delivery
+  namespace: flux-system
+spec:
+  providerRef:
+    name: progressive-delivery
+
+  eventSeverity: info
+
+  eventSources:
+    - kind: Kustomization
+      name: progressive-delivery

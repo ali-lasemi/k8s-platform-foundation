@@ -1,0 +1,53 @@
+---
+apiVersion: flagger.app/v1beta1
+kind: Canary
+
+metadata:
+  name: ingress-demo
+  namespace: ingress-demo
+
+spec:
+  provider: traefik
+
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ingress-demo
+
+  service:
+    port: 80
+
+  progressDeadlineSeconds: 600
+
+  analysis:
+    interval: 1m
+
+    threshold: 5
+
+    maxWeight: 50
+
+    stepWeight: 10
+
+    metrics:
+      - name: request-success-rate
+        thresholdRange:
+          min: 99
+
+      - name: request-duration
+        thresholdRange:
+          max: 500
+
+    webhooks:
+      - name: load-test
+        type: rollout
+
+        url: http://flagger-loadtester.flagger-system/
+
+        timeout: 30s
+
+        metadata:
+          cmd: |
+            hey \
+              -z 1m \
+              -q 10 \
+              http://ingress-demo/

@@ -1,0 +1,52 @@
+---
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: blue-green-demo
+  namespace: blue-green-demo
+spec:
+  provider: traefik
+
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: blue-green-demo
+
+  progressDeadlineSeconds: 600
+
+  service:
+    port: 80
+    targetPort: http
+
+  analysis:
+    interval: 1m
+    threshold: 3
+    iterations: 5
+
+    metrics:
+      - name: request-success-rate
+        templateRef:
+          name: blue-green-success-rate
+        thresholdRange:
+          min: 99
+        interval: 1m
+
+    webhooks:
+      - name: acceptance-test
+        type: pre-rollout
+        url: http://flagger-loadtester.flagger-system/
+        timeout: 30s
+        metadata:
+          type: bash
+          cmd: >-
+            curl -fsS
+            http://blue-green-demo-canary.blue-green-demo/
+
+      - name: load-test
+        type: rollout
+        url: http://flagger-loadtester.flagger-system/
+        timeout: 30s
+        metadata:
+          cmd: >-
+            hey -z 1m -q 10
+            http://blue-green-demo-canary.blue-green-demo/

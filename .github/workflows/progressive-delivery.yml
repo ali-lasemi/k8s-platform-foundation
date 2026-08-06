@@ -1,0 +1,19 @@
+---
+name: Progressive Delivery
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - shell: pwsh
+        run: |
+          ./validation/progressive-delivery.ps1

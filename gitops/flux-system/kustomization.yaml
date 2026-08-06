@@ -12,3 +12,5 @@ resources:
   - secrets.yaml
   - external-dns.yaml
   - ingress-demo.yaml
+  - flagger.yaml
+  - progressive-delivery.yaml

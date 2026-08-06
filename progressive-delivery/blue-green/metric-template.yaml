@@ -1,0 +1,31 @@
+---
+apiVersion: flagger.app/v1beta1
+kind: MetricTemplate
+metadata:
+  name: blue-green-success-rate
+  namespace: blue-green-demo
+spec:
+  provider:
+    type: prometheus
+    address: >-
+      http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+  query: |
+    100 - (
+      sum(
+        rate(
+          traefik_service_requests_total{
+            service=~"blue-green-demo-blue-green-demo-canary-.*",
+            code=~"5.*"
+          }[1m]
+        )
+      )
+      /
+      sum(
+        rate(
+          traefik_service_requests_total{
+            service=~"blue-green-demo-blue-green-demo-canary-.*"
+          }[1m]
+        )
+      )
+      * 100
+    )
