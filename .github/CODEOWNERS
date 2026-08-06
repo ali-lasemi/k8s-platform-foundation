@@ -1,0 +1,19 @@
+# Global repository ownership
+* @ali-lasemi
+
+# CI and repository automation
+/.github/ @ali-lasemi
+
+# Cluster bootstrap and operations
+/bootstrap/ @ali-lasemi
+/scripts/ @ali-lasemi
+/validation/ @ali-lasemi
+
+# Kubernetes and GitOps configuration
+/cluster/ @ali-lasemi
+/clusters/ @ali-lasemi
+/gitops/ @ali-lasemi
+/platform/ @ali-lasemi
+
+# Architecture and operational documentation
+/docs/ @ali-lasemi
