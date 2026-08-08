@@ -150,3 +150,16 @@ results:
       - missing-labels-deployment
     kind: Deployment
     result: fail
+  - policy: disallow-latest-tag
+    rule: validate-image-tag
+    resources:
+      - latest-tag-pod
+    kind: Pod
+    result: fail
+
+  - policy: disallow-latest-tag
+    rule: validate-image-tag
+    resources:
+      - compliant-pod
+    kind: Pod
+    result: pass

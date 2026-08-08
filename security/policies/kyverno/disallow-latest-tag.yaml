@@ -23,12 +23,26 @@ spec:
                   security.platform.io/enforce: restricted
       validate:
         allowExistingViolations: true
-        message: Images must use an explicit immutable version tag.
-        pattern:
-          spec:
-            containers:
-              - image: "*:*"
-                =(imagePullPolicy): "Always | IfNotPresent"
-            =(initContainers):
-              - image: "*:*"
-                =(imagePullPolicy): "Always | IfNotPresent"
+        message: Images must use an explicit non-latest version tag.
+        foreach:
+          - list: request.object.spec.containers
+            deny:
+              conditions:
+                any:
+                  - key: "{{ element.image }}"
+                    operator: Equals
+                    value: "*:latest"
+                  - key: "{{ element.image }}"
+                    operator: NotEquals
+                    value: "*:*"
+
+          - list: request.object.spec.initContainers || `[]`
+            deny:
+              conditions:
+                any:
+                  - key: "{{ element.image }}"
+                    operator: Equals
+                    value: "*:latest"
+                  - key: "{{ element.image }}"
+                    operator: NotEquals
+                    value: "*:*"
