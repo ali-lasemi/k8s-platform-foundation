@@ -57,3 +57,22 @@ make uninstall
 - Kubernetes security policies
 - Backup and disaster recovery
 - Failure-recovery scenarios
+## Architecture
+
+The platform architecture is documented with version-controlled Mermaid
+diagrams.
+
+Key diagrams:
+
+- [Platform overview](docs/architecture/platform-overview.md)
+- [Component map](docs/architecture/component-map.md)
+- [GitOps flow](docs/architecture/gitops-flow.md)
+- [Ingress, DNS and TLS flow](docs/architecture/traffic-flow.md)
+- [Observability flow](docs/architecture/observability-flow.md)
+- [Encrypted secrets flow](docs/architecture/secrets-flow.md)
+- [Disaster recovery flow](docs/architecture/disaster-recovery-flow.md)
+- [Progressive delivery flow](docs/architecture/progressive-delivery-flow.md)
+- [Environment promotion flow](docs/architecture/environment-promotion-flow.md)
+
+See the complete architecture index in
+[docs/architecture/README.md](docs/architecture/README.md).

@@ -1,0 +1,33 @@
+---
+name: Architecture documentation validation
+
+on:
+  pull_request:
+    paths:
+      - "docs/architecture/**"
+      - "README.md"
+      - "validation/architecture-docs.ps1"
+
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/architecture/**"
+      - "README.md"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate architecture documentation
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Validate architecture docs
+        shell: pwsh
+        run: |
+          ./validation/architecture-docs.ps1
