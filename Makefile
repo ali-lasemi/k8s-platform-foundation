@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate backup-create backup-verify backup-install-timer velero-validate backup-live-test dr-validate node-drain node-uncordon node-remove node-validate upgrade-preflight upgrade-server upgrade-agent rollback-server certificate-rotate certificate-check lifecycle-validate sops-validate sops-generate-key sops-update-recipient sops-bootstrap sops-rotate ingress-dns-validate ingress-dns-health policy-test policy-test-validate policy-admission-test environment-validate promote-dev-staging promote-staging-production architecture-validate runbooks-validate
+.PHONY: help security-validate install join uninstall validate smoke-test platform-health apply-foundation bootstrap-flux export-kubeconfig observability-validate backup-create backup-verify backup-install-timer velero-validate backup-live-test dr-validate node-drain node-uncordon node-remove node-validate upgrade-preflight upgrade-server upgrade-agent rollback-server certificate-rotate certificate-check lifecycle-validate sops-validate sops-generate-key sops-update-recipient sops-bootstrap sops-rotate ingress-dns-validate ingress-dns-health policy-test policy-test-validate policy-admission-test environment-validate promote-dev-staging promote-staging-production architecture-validate runbooks-validate production-readiness release-gates release-version-validate release-checklist release-e2e
 
 help:
 @echo "Available targets:"
@@ -128,3 +128,13 @@ architecture-validate:
 pwsh -File ./validation/architecture-docs.ps1
 runbooks-validate:
 pwsh -File ./validation/runbooks.ps1
+production-readiness:
+pwsh -File ./validation/production-readiness.ps1
+release-gates:
+pwsh -File ./validation/release-gates.ps1
+release-version-validate:
+pwsh -File ./validation/release-version.ps1
+release-checklist:
+pwsh -File ./validation/release-checklist.ps1
+release-e2e:
+pwsh -File ./validation/release-e2e.ps1

@@ -1,0 +1,26 @@
+---
+name: Release end-to-end validation
+
+on:
+  pull_request:
+
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  release-e2e:
+    name: v1.0 release validation
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Run end-to-end release validation
+        shell: pwsh
+        run: |
+          ./validation/release-e2e.ps1

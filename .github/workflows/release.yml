@@ -1,0 +1,53 @@
+---
+name: GitHub Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish stable release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Validate tag and VERSION
+        shell: pwsh
+        run: |
+          ./validation/release-version.ps1
+
+          $version = (Get-Content VERSION -Raw).Trim()
+          $expectedTag = "v$version"
+
+          if ($env:GITHUB_REF_NAME -ne $expectedTag) {
+              Write-Error "Tag $env:GITHUB_REF_NAME does not match VERSION $version."
+              exit 1
+          }
+
+      - name: Validate production readiness
+        shell: pwsh
+        run: |
+          ./validation/production-readiness.ps1
+
+      - name: Validate release gates
+        shell: pwsh
+        run: |
+          ./validation/release-gates.ps1
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
+            --generate-notes \
+            --verify-tag

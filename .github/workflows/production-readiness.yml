@@ -1,0 +1,49 @@
+---
+name: Production readiness
+
+on:
+  pull_request:
+
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  repository:
+    name: Repository readiness
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Run production readiness validation
+        shell: pwsh
+        run: |
+          ./validation/production-readiness.ps1
+
+  environments:
+    name: Environment rendering
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Render development
+        run: kubectl kustomize environments/dev > /tmp/dev.yaml
+
+      - name: Render staging
+        run: kubectl kustomize environments/staging > /tmp/staging.yaml
+
+      - name: Render production
+        run: kubectl kustomize environments/production > /tmp/production.yaml
+
+      - name: Verify rendered manifests
+        run: |
+          test -s /tmp/dev.yaml
+          test -s /tmp/staging.yaml
+          test -s /tmp/production.yaml

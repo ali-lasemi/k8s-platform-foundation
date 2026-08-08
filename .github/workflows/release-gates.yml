@@ -1,0 +1,56 @@
+---
+name: Release gates
+
+on:
+  pull_request:
+
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    name: Release inventory validation
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Validate release gates
+        shell: pwsh
+        run: |
+          ./validation/release-gates.ps1
+
+  quality:
+    name: Final quality matrix
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Render core Kustomize trees
+        run: |
+          kubectl kustomize cluster/namespaces > /tmp/namespaces.yaml
+          kubectl kustomize cluster/network > /tmp/network.yaml
+          kubectl kustomize platform/traefik > /tmp/traefik.yaml
+          kubectl kustomize platform/cert-manager > /tmp/cert-manager.yaml
+          kubectl kustomize platform/external-dns > /tmp/external-dns.yaml
+          kubectl kustomize environments/dev > /tmp/dev.yaml
+          kubectl kustomize environments/staging > /tmp/staging.yaml
+          kubectl kustomize environments/production > /tmp/production.yaml
+
+      - name: Verify outputs
+        run: |
+          test -s /tmp/namespaces.yaml
+          test -s /tmp/network.yaml
+          test -s /tmp/traefik.yaml
+          test -s /tmp/cert-manager.yaml
+          test -s /tmp/external-dns.yaml
+          test -s /tmp/dev.yaml
+          test -s /tmp/staging.yaml
+          test -s /tmp/production.yaml
