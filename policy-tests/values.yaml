@@ -1,0 +1,10 @@
+---
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Values
+metadata:
+  name: policy-test-values
+
+namespaceSelector:
+  - name: platform-system
+    labels:
+      security.platform.io/enforce: restricted

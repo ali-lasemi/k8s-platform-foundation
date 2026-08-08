@@ -3,6 +3,7 @@ apiVersion: cli.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: kubernetes-security-baseline
+
 policies:
   - ../security/policies/kyverno/disallow-privileged.yaml
   - ../security/policies/kyverno/disallow-host-path.yaml
@@ -18,6 +19,7 @@ policies:
 
 resources:
   - fixtures/compliant/pod.yaml
+  - fixtures/compliant/deployment.yaml
   - fixtures/noncompliant/privileged-pod.yaml
   - fixtures/noncompliant/host-path-pod.yaml
   - fixtures/noncompliant/host-namespace-pod.yaml
@@ -25,102 +27,126 @@ resources:
   - fixtures/noncompliant/missing-resources-pod.yaml
   - fixtures/noncompliant/writable-root-pod.yaml
   - fixtures/noncompliant/service-account-token-pod.yaml
+  - fixtures/noncompliant/missing-labels-deployment.yaml
+
+variables: values.yaml
 
 results:
-  - policy: disallow-privileged
-    rule: disallow-privileged-containers
+  - policy: disallow-privileged-containers
+    rule: validate-privileged
     resources:
-      - platform-system/privileged-pod
+      - privileged-pod
     kind: Pod
     result: fail
 
   - policy: disallow-host-path
-    rule: disallow-host-path-volumes
+    rule: validate-host-path
     resources:
-      - platform-system/host-path-pod
+      - host-path-pod
     kind: Pod
     result: fail
 
   - policy: disallow-host-namespaces
-    rule: disallow-host-namespaces
+    rule: validate-host-namespaces
     resources:
-      - platform-system/host-namespace-pod
+      - host-namespace-pod
     kind: Pod
     result: fail
 
-  - policy: disallow-latest-tag
-    rule: require-image-tag
+  - policy: require-resource-requests-and-limits
+    rule: validate-resources
     resources:
-      - platform-system/latest-tag-pod
-    kind: Pod
-    result: fail
-
-  - policy: require-resources
-    rule: require-requests-and-limits
-    resources:
-      - platform-system/missing-resources-pod
+      - missing-resources-pod
     kind: Pod
     result: fail
 
   - policy: require-read-only-root-filesystem
-    rule: require-read-only-root-filesystem
+    rule: validate-read-only-root-filesystem
     resources:
-      - platform-system/writable-root-pod
+      - writable-root-pod
     kind: Pod
     result: fail
 
-  - policy: disable-service-account-token
-    rule: disable-automount-service-account-token
+  - policy: disable-service-account-token-automount
+    rule: validate-token-automount
     resources:
-      - platform-system/service-account-token-pod
+      - service-account-token-pod
     kind: Pod
     result: fail
 
   - policy: require-non-root
     rule: require-run-as-non-root
     resources:
-      - platform-system/compliant-pod
+      - compliant-pod
     kind: Pod
     result: pass
 
   - policy: require-seccomp
-    rule: require-runtime-default-seccomp
+    rule: validate-seccomp
     resources:
-      - platform-system/compliant-pod
+      - compliant-pod
     kind: Pod
     result: pass
 
-  - policy: drop-capabilities
-    rule: require-drop-all-capabilities
+  - policy: drop-linux-capabilities
+    rule: require-drop-all
     resources:
-      - platform-system/compliant-pod
+      - compliant-pod
     kind: Pod
     result: pass
 
-  - policy: require-resources
-    rule: require-requests-and-limits
+  - policy: require-resource-requests-and-limits
+    rule: validate-resources
     resources:
-      - platform-system/compliant-pod
+      - compliant-pod
     kind: Pod
     result: pass
 
   - policy: require-read-only-root-filesystem
-    rule: require-read-only-root-filesystem
+    rule: validate-read-only-root-filesystem
     resources:
-      - platform-system/compliant-pod
+      - compliant-pod
     kind: Pod
     result: pass
 
-  - policy: disable-service-account-token
-    rule: disable-automount-service-account-token
+  - policy: disable-service-account-token-automount
+    rule: validate-token-automount
     resources:
-      - platform-system/compliant-pod
+      - compliant-pod
+    kind: Pod
+    result: pass
+
+  - policy: disallow-privileged-containers
+    rule: validate-privileged
+    resources:
+      - compliant-pod
+    kind: Pod
+    result: pass
+
+  - policy: disallow-host-path
+    rule: validate-host-path
+    resources:
+      - compliant-pod
+    kind: Pod
+    result: pass
+
+  - policy: disallow-host-namespaces
+    rule: validate-host-namespaces
+    resources:
+      - compliant-pod
     kind: Pod
     result: pass
 
   - policy: require-standard-labels
-    rule: require-standard-labels
+    rule: validate-workload-labels
     resources:
-      - platform-system/compliant-pod
-    kind: Pod
+      - compliant-deployment
+    kind: Deployment
     result: pass
+
+  - policy: require-standard-labels
+    rule: validate-workload-labels
+    resources:
+      - missing-labels-deployment
+    kind: Deployment
+    result: fail
