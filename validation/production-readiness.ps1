@@ -68,9 +68,9 @@ foreach ($file in $requiredFiles) {
 Pass "Required production files exist."
 
 $environmentPaths = @(
-    "environments\dev",
-    "environments\staging",
-    "environments\production"
+    "environments/dev",
+    "environments/staging",
+    "environments/production"
 )
 
 if (Get-Command kubectl -ErrorAction SilentlyContinue) {
