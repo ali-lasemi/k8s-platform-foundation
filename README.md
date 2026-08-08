@@ -76,3 +76,21 @@ Key diagrams:
 
 See the complete architecture index in
 [docs/architecture/README.md](docs/architecture/README.md).
+## Operations and Incident Response
+
+Production operations are documented through actionable runbooks covering:
+
+- incident response and severity classification;
+- initial incident triage;
+- node and control-plane failures;
+- Flux reconciliation failures;
+- ingress, TLS and DNS incidents;
+- observability failures;
+- backup and restore failures;
+- encrypted secret recovery;
+- controlled upgrades and rollback;
+- on-call handover;
+- post-incident review.
+
+See the complete operations index in
+[docs/runbooks/README.md](docs/runbooks/README.md).

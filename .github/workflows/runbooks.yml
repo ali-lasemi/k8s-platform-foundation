@@ -1,0 +1,34 @@
+---
+name: Production runbook validation
+
+on:
+  pull_request:
+    paths:
+      - "docs/runbooks/**"
+      - "validation/runbooks.ps1"
+      - "README.md"
+
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/runbooks/**"
+      - "validation/runbooks.ps1"
+      - "README.md"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate production runbooks
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Validate runbook inventory
+        shell: pwsh
+        run: |
+          ./validation/runbooks.ps1
