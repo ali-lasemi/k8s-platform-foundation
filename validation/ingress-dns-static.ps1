@@ -22,7 +22,7 @@ foreach ($file in $requiredFiles) {
 
 $externalDns = Get-Content "platform\external-dns\release.yaml" -Raw
 
-if ($externalDns -notmatch "provider:\s+[\r\n]+\s+name:\s+cloudflare") {
+if ($externalDns -notmatch "provider:\s*\r?\n\s+name:\s*cloudflare") {
     Write-Error "ExternalDNS Cloudflare provider is not configured."
     exit 1
 }
