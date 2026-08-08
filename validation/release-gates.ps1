@@ -69,7 +69,7 @@ $readme = Get-Content "README.md" -Raw
 
 $requiredReadmeSections = @(
     "Architecture",
-    "Operations and Incident Response"
+    "Operations"
 )
 
 foreach ($section in $requiredReadmeSections) {

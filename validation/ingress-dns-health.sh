@@ -15,8 +15,8 @@ fail() {
 }
 
 require_command() {
-  command -v "$1" >/dev/null 2>&1 ||
-    fail "Required command not found: $1"
+  command -v "$1" >/dev/null 2>&1 \
+    || fail "Required command not found: $1"
 }
 
 main() {
@@ -62,8 +62,8 @@ main() {
       -o jsonpath='{.spec.tls[0].secretName}'
   )"
 
-  [[ "${tls_secret}" == "ingress-demo-tls" ]] ||
-    fail "Unexpected TLS Secret: ${tls_secret}"
+  [[ "${tls_secret}" == "ingress-demo-tls" ]] \
+    || fail "Unexpected TLS Secret: ${tls_secret}"
 
   configured_host="$(
     kubectl get ingress ingress-demo \
@@ -71,8 +71,8 @@ main() {
       -o jsonpath='{.spec.rules[0].host}'
   )"
 
-  [[ "${configured_host}" == "${DEMO_HOST}" ]] ||
-    fail "Unexpected ingress hostname: ${configured_host}"
+  [[ "${configured_host}" == "${DEMO_HOST}" ]] \
+    || fail "Unexpected ingress hostname: ${configured_host}"
 
   log "Ingress and DNS platform validation passed."
 }

@@ -23,8 +23,8 @@ cleanup() {
 
 trap cleanup EXIT
 
-command -v kubectl >/dev/null 2>&1 ||
-  fail "kubectl is required."
+command -v kubectl >/dev/null 2>&1 \
+  || fail "kubectl is required."
 
 log "Waiting for Kyverno admission controller"
 
@@ -46,8 +46,8 @@ kubectl label namespace "${TEST_NAMESPACE}" \
 log "Applying compliant workload"
 
 sed "s/namespace: platform-system/namespace: ${TEST_NAMESPACE}/" \
-  policy-tests/fixtures/compliant/pod.yaml |
-  kubectl apply -f -
+  policy-tests/fixtures/compliant/pod.yaml \
+  | kubectl apply -f -
 
 kubectl wait \
   pod/compliant-pod \
@@ -58,24 +58,24 @@ kubectl wait \
 log "Verifying privileged workload rejection"
 
 if sed "s/namespace: platform-system/namespace: ${TEST_NAMESPACE}/" \
-  policy-tests/fixtures/noncompliant/privileged-pod.yaml |
-  kubectl apply -f -; then
+  policy-tests/fixtures/noncompliant/privileged-pod.yaml \
+  | kubectl apply -f -; then
   fail "Privileged workload was unexpectedly accepted."
 fi
 
 log "Verifying latest-tag workload rejection"
 
 if sed "s/namespace: platform-system/namespace: ${TEST_NAMESPACE}/" \
-  policy-tests/fixtures/noncompliant/latest-tag-pod.yaml |
-  kubectl apply -f -; then
+  policy-tests/fixtures/noncompliant/latest-tag-pod.yaml \
+  | kubectl apply -f -; then
   fail "Latest-tag workload was unexpectedly accepted."
 fi
 
 log "Verifying missing-resource workload rejection"
 
 if sed "s/namespace: platform-system/namespace: ${TEST_NAMESPACE}/" \
-  policy-tests/fixtures/noncompliant/missing-resources-pod.yaml |
-  kubectl apply -f -; then
+  policy-tests/fixtures/noncompliant/missing-resources-pod.yaml \
+  | kubectl apply -f -; then
   fail "Workload without resource controls was unexpectedly accepted."
 fi
 
