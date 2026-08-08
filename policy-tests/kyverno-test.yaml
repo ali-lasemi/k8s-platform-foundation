@@ -30,97 +30,97 @@ results:
   - policy: disallow-privileged
     rule: disallow-privileged-containers
     resources:
-      - privileged-pod
+      - platform-system/privileged-pod
     kind: Pod
     result: fail
 
   - policy: disallow-host-path
     rule: disallow-host-path-volumes
     resources:
-      - host-path-pod
+      - platform-system/host-path-pod
     kind: Pod
     result: fail
 
   - policy: disallow-host-namespaces
     rule: disallow-host-namespaces
     resources:
-      - host-namespace-pod
+      - platform-system/host-namespace-pod
     kind: Pod
     result: fail
 
   - policy: disallow-latest-tag
     rule: require-image-tag
     resources:
-      - latest-tag-pod
+      - platform-system/latest-tag-pod
     kind: Pod
     result: fail
 
   - policy: require-resources
     rule: require-requests-and-limits
     resources:
-      - missing-resources-pod
+      - platform-system/missing-resources-pod
     kind: Pod
     result: fail
 
   - policy: require-read-only-root-filesystem
     rule: require-read-only-root-filesystem
     resources:
-      - writable-root-pod
+      - platform-system/writable-root-pod
     kind: Pod
     result: fail
 
   - policy: disable-service-account-token
     rule: disable-automount-service-account-token
     resources:
-      - service-account-token-pod
+      - platform-system/service-account-token-pod
     kind: Pod
     result: fail
 
   - policy: require-non-root
     rule: require-run-as-non-root
     resources:
-      - compliant-pod
+      - platform-system/compliant-pod
     kind: Pod
     result: pass
 
   - policy: require-seccomp
     rule: require-runtime-default-seccomp
     resources:
-      - compliant-pod
+      - platform-system/compliant-pod
     kind: Pod
     result: pass
 
   - policy: drop-capabilities
     rule: require-drop-all-capabilities
     resources:
-      - compliant-pod
+      - platform-system/compliant-pod
     kind: Pod
     result: pass
 
   - policy: require-resources
     rule: require-requests-and-limits
     resources:
-      - compliant-pod
+      - platform-system/compliant-pod
     kind: Pod
     result: pass
 
   - policy: require-read-only-root-filesystem
     rule: require-read-only-root-filesystem
     resources:
-      - compliant-pod
+      - platform-system/compliant-pod
     kind: Pod
     result: pass
 
   - policy: disable-service-account-token
     rule: disable-automount-service-account-token
     resources:
-      - compliant-pod
+      - platform-system/compliant-pod
     kind: Pod
     result: pass
 
   - policy: require-standard-labels
     rule: require-standard-labels
     resources:
-      - compliant-pod
+      - platform-system/compliant-pod
     kind: Pod
     result: pass
