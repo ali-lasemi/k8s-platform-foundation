@@ -1,0 +1,22 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: environment-dev
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: cluster-foundation
+    - name: encrypted-secrets
+
+  interval: 5m
+  retryInterval: 1m
+  timeout: 10m
+  wait: true
+  prune: true
+
+  sourceRef:
+    kind: GitRepository
+    name: k8s-platform-foundation
+
+  path: ./environments/dev

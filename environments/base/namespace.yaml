@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform-workloads
+  labels:
+    app.kubernetes.io/part-of: k8s-platform-foundation
+    app.kubernetes.io/managed-by: flux

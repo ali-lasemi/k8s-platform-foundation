@@ -1,0 +1,54 @@
+---
+name: Environment promotion validation
+
+on:
+  pull_request:
+    paths:
+      - "environments/**"
+      - "gitops/flux-system/environment-*.yaml"
+      - "scripts/promote-environment.ps1"
+      - "validation/environment-promotion.ps1"
+  push:
+    branches:
+      - main
+    paths:
+      - "environments/**"
+      - "gitops/flux-system/environment-*.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate environment overlays
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Render development
+        run: |
+          kubectl kustomize environments/dev \
+            > /tmp/dev.yaml
+
+          test -s /tmp/dev.yaml
+
+      - name: Render staging
+        run: |
+          kubectl kustomize environments/staging \
+            > /tmp/staging.yaml
+
+          test -s /tmp/staging.yaml
+
+      - name: Render production
+        run: |
+          kubectl kustomize environments/production \
+            > /tmp/production.yaml
+
+          test -s /tmp/production.yaml
+
+      - name: Validate production safeguards
+        shell: pwsh
+        run: |
+          ./validation/environment-promotion.ps1
